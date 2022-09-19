@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth"
 import {
     getFirestore,
     doc, //used to retrieve documents from our db in firebase
@@ -39,10 +39,8 @@ const firebaseConfig = {
     if (!userAuth) return;
     additionalInformation = {}
     const userDocRef = doc(db, "users", userAuth.uid); //trying to pass in the data we get from the userauthenticatiion.. it takes the databse first and then the document name and then the uid
-    console.log(userDocRef)
 
     const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot.exists());
 
     if (!userSnapshot.exists()) {
         const { displayName, email } = userAuth;
@@ -80,3 +78,7 @@ const firebaseConfig = {
 
     return await signInWithEmailAndPassword(auth, email, password)
   }
+
+  export const signOutUser = async () => signOut(auth);
+
+  export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth, callback)
