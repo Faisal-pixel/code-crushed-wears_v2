@@ -38,7 +38,7 @@ const SignUpForm = () => {
             //Here i get a response and the destructed user from the response i got 
             const {user} = await createAuthUserWithEmailAndPassword(email, password);
             //Here I get the userDocref by passing in the user and then since the displayName key that i get from the user object is null... automatically set the display name from the form
-            const userDocRef = await createUserDocumentFromAuth(user, {displayName: displayName})
+            await createUserDocumentFromAuth(user, {displayName: displayName})
             resetFormFields();
         } catch (error) {
             if(error.code === "auth/email-already-in-use") {
@@ -55,7 +55,6 @@ const SignUpForm = () => {
         const {name, value} = event.target;
 
         setFormFields({...formFields, [name]: value})
-        console.log(value)
 
     }
 
