@@ -5,6 +5,11 @@ import {
     doc, //used to retrieve documents from our db in firebase
     getDoc, // used to access the docs
     setDoc, // used to set data in the docs
+    collection,
+    writeBatch,
+    query,
+    getDocs,
+    QuerySnapshot
 } from "firebase/firestore"
 
 // Your web app's Firebase configuration
@@ -34,6 +39,31 @@ const firebaseConfig = {
 
   // databse
   export const db = getFirestore();
+
+  export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+    const collectionRef = collection(db, collectionKey);
+    const batch = writeBatch(db);
+    objectsToAdd.forEach((object) => {
+      const docRef = doc(collectionRef, object.title.toLowerCase());
+      batch.set(docRef, object);
+    })
+
+    await batch.commit();
+    console.log("done")
+  }
+
+  export const getCategoriesAndDocuments = async () => {
+    const collectionRef = collection(db, "categories");
+    const q = query(collectionRef);
+    const querySnapshots = await getDocs(q);
+    const categoryMap = querySnapshots.docs.reduce((accumulator, docSnapshot) => {
+      const { title, items } = docSnapshot.data();
+      accumulator[title.toLowerCase()] = items;
+      return accumulator
+    }, {})
+
+    return categoryMap
+  }
 
   export const createUserDocumentFromAuth = async (userAuth, additionalInformation) => {
     if (!userAuth) return;
